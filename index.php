@@ -7,8 +7,7 @@
 
  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
  <script type="text/javascript" src="youtube-popup.js"></script>
- <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
- <script type="text/javascript" src="swfobject.js"></script>   
+ <script type="text/javascript" src="jquery-1.11.3.min.js"></script>
 
 
  <script type="text/javascript">
@@ -44,6 +43,7 @@ var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token
 var FAVORITES_URL = 'favorite.php';
 
 var CLIENT_ID = "537332435748.apps.googleusercontent.com";
+var API_KEY = "AIzaSyD53zp_nPejqdtbZOBCxLGJckGiECc73Lk";
 
 var tokenValid = false;
 
@@ -123,7 +123,7 @@ function addToFavorites(videoId)
        else
        {
 	       // popup login screen
-	       window.open ('https://accounts.google.com/o/oauth2/auth?client_id=537332435748.apps.googleusercontent.com&redirect_uri=http://geoffmobile.com/fi/oauth2callback.php&scope=https://gdata.youtube.com&response_type=token&state=' + videoId, 'newwindow', 'height=300,width=500, toolbar=no, menubar=no, scrollbars=no, resizable=yes,location=no, directories=no, status=no');
+	       window.open ('https://accounts.google.com/o/oauth2/auth?client_id=537332435748.apps.googleusercontent.com&redirect_uri=http://geoffmobile.com/fi/oauth2callback.php&scope=https://www.googleapis.com/auth/youtube&response_type=token&state=' + videoId, 'newwindow', 'height=300,width=500, toolbar=no, menubar=no, scrollbars=no, resizable=yes,location=no, directories=no, status=no');
        }
     };
     
@@ -257,8 +257,7 @@ var loadingInProgress = false;
 
 function getSearchVids(searchString, mode)
 {
-    
-  loadVids('http://gdata.youtube.com/feeds/api/videos?alt=json-in-script&callback=?&q=' + encodeURIComponent(searchString) + '&max-results=30&v=2', mode);
+    loadVids('https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q='+ encodeURIComponent(searchString), mode);
 }
 
 function getMoreVids(accountid, mode)
@@ -278,6 +277,13 @@ function getMoreVids(accountid, mode)
         $tokenExtra = '&access_token=' + readCookie(COOKIE_TOKEN);
     }
     
+    // FIXME: Fix the URL below to first make a call to
+    // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=Google&key={YOUR_API_KEY}
+    // and then get the favorites playlist from the user at: https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.channels.list?part=contentDetails&forUsername=Google&_h=1&
+    // or can use the channel id as in: GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=UCK8sQmJBp8GCxrOtXWBpyEA&key={YOUR_API_KEY}
+    // see: https://developers.google.com/youtube/v3/guides/implementation/favorites
+    // and then get the list of videos as in: GET https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails%2Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&key={YOUR_API_KEY}
+    // see: https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.playlistItems.list?part=snippet%252CcontentDetails%252Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&_h=1&
     var loadedOk = loadVids('http://gdata.youtube.com/feeds/api/users/' + accountid + '/favorites?v=2&alt=json-in-script&callback=?&max-results=30' + $tokenExtra, mode);
   
     if (mode !== MODE_MORE && loadedOk)
@@ -296,6 +302,7 @@ function loadMoreStarting ()
 
 function loadVids(requestURL, mode)
 {          
+    requestURL += '&key=' + API_KEY;
     if (mode === MODE_FIRST)
     {
         startingURL = requestURL;
@@ -309,6 +316,7 @@ function loadVids(requestURL, mode)
         requestURL += startString;
     }       
     
+    // FIXME: Make this parsing of the response work properly with youtube v3 API
   $.getJSON(requestURL,
     function(data) 
     {  
@@ -376,17 +384,7 @@ function loadVids(requestURL, mode)
 
 // load all the video favorites from the current row of videos
 function loadVideoRow(vidIndex)
-{
-    /*
-    var rowNum = Math.floor(vidIndex / 9);
-    
-    var startIndex = rowNum*9;
-    var i;
-    for(i=startIndex;i < loadedVids.length && i < startIndex+9; i++)
-    {
-        getMoreVids(loadedVids[i][1], MODE_NORMAL);
-    }*/
-    
+{ 
     var startIndex = vidIndex - 3;
     if (startIndex < 0)
     {
@@ -417,9 +415,7 @@ function toggleAbout()
 
 
 $(document).ready(function()
-{
-    
-    
+{ 
   $(document).keydown(function(e)
   {
     if (e.keyCode === 27)  
@@ -444,6 +440,8 @@ $(document).ready(function()
   
   validateToken(true);
   enableFavoriteButton();
+   // FIXME: Make Youtube player work properly with IFrame player as described here:
+   // https://developers.google.com/youtube/iframe_api_reference
 
 });
 

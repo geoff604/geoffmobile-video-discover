@@ -2,6 +2,8 @@ var currentIndex = 0;
 
 var ytplayer = undefined;
 
+// FIXME: Make this player code work with Youtube IFrame API
+
 function openYouTube(vidIndex){
 	
 	  var startId = loadedVids[vidIndex][0];

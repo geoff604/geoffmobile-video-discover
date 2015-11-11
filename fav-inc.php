@@ -1,5 +1,8 @@
 <?
 
+// FIXME: Make this favorite code work with Youtube API V3
+// FIXME: Separate out GData key into separate file so it doesn't get included in Git repo
+
 // returns true if it could be favorited
 function addFavorite($authToken, $videoId)
 {
@@ -14,7 +17,7 @@ EOS;
 	$url = 'https://gdata.youtube.com/feeds/api/users/default/favorites';
 	$ch = curl_init($url);
 	
-	curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type: application/atom+xml", "Authorization: Bearer $authToken", "GData-Version: 2", "X-GData-Key: key=AI39si5VKSGpFhd3NPrG1YG_roRmtK89dXD2vq76xiiwCFkC55q5wnA2v1-5jwh1ogPoje-6ZFLUvcrfNn1WZUSImNeO4Y4VNQ"));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, Array("Content-Type: application/atom+xml", "Authorization: Bearer $authToken", "GData-Version: 2", "X-GData-Key: key="));
 	curl_setopt($ch, CURLOPT_POST, 1);
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $videoAtom);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
