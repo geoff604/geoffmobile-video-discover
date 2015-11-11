@@ -1,0 +1,232 @@
+<!--
+.popup {
+      position: fixed;
+      z-index: 2;
+      visibility: hidden;
+}
+
+.hidestart {
+	display: none
+}
+
+#logoimg
+{
+	padding-bottom: 4px;
+}
+
+div#inputdiv
+{
+	vertical-align:middle;
+	margin-top:0px;
+	margin-bottom:15px;
+}
+
+input#searchbox
+{
+    height:25px;	
+    vertical-align:middle;
+    border-width:1px;
+    margin-top:2px;
+    margin-left:3px;
+    padding-left:2px;    
+    border-color:#000000;
+}
+
+input#searchsub
+{
+	margin-top:0px;	
+	margin-bottom:0px;
+	padding:0px;
+	vertical-align:middle;	
+	background : url("go-large.png") no-repeat center center;
+	width : 48px;
+	height :31px;
+	border : none;
+	color : transparent;
+	font-size : 0;
+	cursor: pointer; /* hand-shaped cursor */
+    cursor: hand; /* for IE 5.x */
+}
+
+
+input#channelbox
+{
+    height:20px;	
+    vertical-align:middle;
+    border-width:1px;
+    margin-top:2px;
+    margin-left:3px;
+    padding-left:2px;    
+    border-color:#000000;
+}
+
+input#channelsub
+{
+	margin-top:0px;	
+	margin-bottom:0px;
+	padding:0px;
+	vertical-align:middle;
+	background : url("go-small.png") no-repeat center center;
+	width : 38px;
+	height :25px;
+	border : none;
+	color : transparent;
+	font-size : 0;
+	cursor: pointer; /* hand-shaped cursor */
+    cursor: hand; /* for IE 5.x */
+}
+
+div#outermain
+{
+	max-width:1120px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top:5px;
+	margin-bottom:5px;
+	padding-left:20px;
+	padding-right:20px;
+	background-color:#FFFFFF;
+}
+
+div#instructtop
+{
+   margin-top: 10px;
+   margin-bottom: 10px;	
+}
+
+.popup_bg {
+      position: fixed;     visibility: hidden;
+      height: 100%; width: 100%;
+      filter: alpha(opacity=80); /* for IE */
+      opacity: 0.8; /* CSS3 standard */
+      left: 0px; top: 0px;
+      background-color: #999;
+      z-index: 1;
+}
+.ytcontainer {
+      border: 2px solid #666;
+      clear: both;
+}
+div#yt {
+	background-color: #000000;
+}
+div#ytwrapper
+{
+	padding:0px;
+	margin:0px;	
+}
+
+div#watch {
+	padding:2px 3px;
+}
+
+#signInLink {
+	font-weight: bold;
+}
+
+.close_button {
+      font-family: Verdana, Geneva, sans-serif;
+      font-size: small; font-weight: bold;
+      color: #666; text-decoration: none;
+      display: block; float: right;
+      background-color: #FFF;
+      z-index: 3; cursor: default;
+      border: 2px solid #666;
+      margin-bottom: -2px;
+      padding: 0px 3px 0px 3px;
+}
+
+.watch_button {
+      font-size: small;
+      color: #666; text-decoration: none;
+      display: block; float: right;
+      background-color: #FFF;
+      z-index: 3; cursor: default;
+      border: 0px solid #666;
+      margin-bottom: -2px;
+      padding: 0px 3px 0px 3px;
+}
+
+a:link {color: #870505}
+a:active {color: #870505}
+a:visited {color: #870505}
+a:hover {color: #870505}
+
+a.grey:link {color: #666; font-weight: normal;}
+a.grey:active {color: #666; font-weight: normal;}
+a.grey:visited {color: #666; font-weight: normal;}
+a.grey:hover {color: #666; font-weight: normal;}
+
+span.larger
+{
+font-size:large;	
+}
+
+div#how
+{
+visibility:hidden;	
+}
+
+body { margin: 3px; 
+
+font: 14px Arial,Helvetica,sans-serif;
+
+
+background-color:#FFFFFF;
+/*
+background-image:url('back-2.gif');
+*/
+}
+
+div#leftbox
+{
+margin: 20px;
+}
+
+div#rightbox
+{
+margin-top:13px;
+padding: 2px 10px 10px 30px;
+}
+
+span#explore
+{
+	font-weight: normal;
+	
+}
+
+div#bluebox
+{
+    padding-top:27px;
+    margin-left:20px;
+	width:566px;
+    height:120px;
+}
+
+
+div#outerbluebox
+{
+	width:580px;
+    height:120px;
+    padding-top:12px;
+    margin:0px;
+    
+    background-image:url(fixed-box-gradient.png)
+}
+
+div#searcharea
+{
+	padding-top:16px;
+	padding-bottom:20px;
+	padding-left:20px;
+}
+
+div#instructionbox
+{
+	padding-top:5px;
+	padding-bottom:15px;
+	width:375px;
+}
+
+
+-->
