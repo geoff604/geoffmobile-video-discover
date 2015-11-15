@@ -50,7 +50,8 @@ var tokenValid = false;
 function setTokenValid(isValid)
 {
     tokenValid = isValid;
-    if(isValid) {
+    if (isValid)
+    {
        enableSignOut();        
     }
     else
@@ -166,82 +167,79 @@ function validateToken(firstTime, callback)
             }
         },  
         dataType: "jsonp"  
-    });
-            
+    });   
 }
 
 function loadFirstTime()
 {
-  var idstring = gup("id");
+    var idstring = gup("id");
           
-  var noIdSpecified = (idstring.length === 0);
-  var usingDefaultFavorites = false;
+    var noIdSpecified = (idstring.length === 0);
+    var usingDefaultFavorites = false;
   
-  if (noIdSpecified && !tokenValid)
-  {
-    idstring = "geoffmobile";         
-  }
-  else if (noIdSpecified && tokenValid)
-  {
-    idstring = "default";
-    usingDefaultFavorites = true;         
-  }
+    if (noIdSpecified && !tokenValid)
+    {
+        idstring = "geoffmobile";         
+    }
+    else if (noIdSpecified && tokenValid)
+    {
+        idstring = "default";
+        usingDefaultFavorites = true;         
+    }
           
-  var searchString = gup("q");    
-  var targetElement = document.getElementById('searchbox');
-  var userString = searchString.replace(/\+/g, ' ');
-  targetElement.value = userString;
-  
-  if (searchString.length > 0)
-  {
-    getSearchVids(searchString, MODE_FIRST);
-  }
-  else if (usingDefaultFavorites)
-  {
-      $('span#explore').append('<a href="http://www.youtube.com/">Visit Youtube</a>');
-        
-      getMoreVids(idstring, MODE_FIRST); 
-  } 
-  else
-  {           
-    targetElement = document.getElementById('channelbox');
-    targetElement.value = idstring;
-  
-    $('span#explore').append('<a href="http://www.youtube.com/user/' + encodeURIComponent(idstring) + '">Visit channel</a>');   
-    
-    getMoreVids(idstring, MODE_FIRST);
-  }
+    var searchString = gup("q");    
+    var targetElement = document.getElementById('searchbox');
+    var userString = searchString.replace(/\+/g, ' ');
+    targetElement.value = userString;
 
+    if (searchString.length > 0)
+    {
+        getSearchVids(searchString, MODE_FIRST);
+    }
+    else if (usingDefaultFavorites)
+    {
+        $('span#explore').append('<a href="http://www.youtube.com/">Visit Youtube</a>');
+
+        getMoreVids(idstring, MODE_FIRST); 
+    } 
+    else
+    {           
+        targetElement = document.getElementById('channelbox');
+        targetElement.value = idstring;
+
+        $('span#explore').append('<a href="http://www.youtube.com/user/' + encodeURIComponent(idstring) + '">Visit channel</a>');   
+
+        getMoreVids(idstring, MODE_FIRST);
+    }
 }
 
 function gup( name )
 {
-  name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
-  var regexS = "[\\?&]"+name+"=([^&#]*)";
-  var regex = new RegExp( regexS );
-  var results = regex.exec( window.location.href );
-  if( results === null ) {
-    return "";
-  }
-  else{
-    return results[1];
-  }
+    name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
+    var regexS = "[\\?&]"+name+"=([^&#]*)";
+    var regex = new RegExp( regexS );
+    var results = regex.exec( window.location.href );
+    if ( results === null )
+    {
+        return "";
+    }
+    else
+    {
+        return results[1];
+    }
 }
 
 function toBottom()
 {
-  window.scrollTo(0,document.body.scrollHeight);
+    window.scrollTo(0,document.body.scrollHeight);
 }
    
 function escapeDouble ( mystring )
 {
-  return mystring.replace(/"/g, "&quot;");
+    return mystring.replace(/"/g, "&quot;");
 }
 
-var loadedok = false;
-
 var loadedChans = new Array();
-
 var loadedVids = new Array();
 
 var MODE_FIRST = 0;
@@ -288,7 +286,7 @@ function getMoreVids(accountid, mode)
   
     if (mode !== MODE_MORE && loadedOk)
     {
-        loadedChans.push (accountid);   
+        loadedChans.push(accountid);   
     }
 }
 
@@ -302,14 +300,17 @@ function loadMoreStarting ()
 
 function loadVids(requestURL, mode)
 {          
-    requestURL += '&key=' + API_KEY;
     if (mode === MODE_FIRST)
     {
         startingURL = requestURL;
     }
+
+    requestURL += '&key=' + API_KEY;
     if (mode === MODE_MORE || mode === MODE_FIRST)
     {
         var startString = "";
+        
+        // TODO: Check if start-index is supported in V3.
         startString = "&start-index=" + startingIndex;
         startingIndex += 30;
         
@@ -317,67 +318,65 @@ function loadVids(requestURL, mode)
     }       
     
     // FIXME: Make this parsing of the response work properly with youtube v3 API
-  $.getJSON(requestURL,
-    function(data) 
-    {  
-      var vidIndex = loadedVids.length;
-        
-      var dataToAppend = '';
-      
-      var totalResults = data.feed.openSearch$totalResults.$t;
-      
-      if (mode == MODE_MORE || mode == MODE_FIRST)
-      {
-          var moreobj = document.getElementById('morediv');
-          if (startingIndex <= totalResults)
-          {
-              moreobj.style.visibility = "visible";
-          }
-          else
-          {
-              moreobj.style.visibility = "hidden";
-          }
-      }
-      if (!data.feed.entry) {
-          return;
-      }
-      $.each(data.feed.entry, function(i, item) 
-      {      
-        var thumbpart = item['media$group']['media$thumbnail'];
-        if (thumbpart == undefined)
-          return;
-        
-        var thumb = thumbpart[0].url;
-        var title = item['media$group']['media$title'].$t;
-        if (title === "Deleted video") {
-            return;
+    $.getJSON(requestURL,
+        function(data) 
+        {  
+            var vidIndex = loadedVids.length;
+
+            var dataToAppend = '';
+
+            var totalResults = data.feed.openSearch$totalResults.$t;
+
+            if (mode == MODE_MORE || mode == MODE_FIRST)
+            {
+                var moreobj = document.getElementById('morediv');
+                if (startingIndex <= totalResults)
+                {
+                    moreobj.style.visibility = "visible";
+                }
+                else
+                {
+                    moreobj.style.visibility = "hidden";
+                }
+            }
+            if (!data.feed.entry) {
+                return;
+            }
+            $.each(data.feed.entry, function(i, item) {      
+                var thumbpart = item['media$group']['media$thumbnail'];
+                if (thumbpart == undefined)
+                  return;
+
+                var thumb = thumbpart[0].url;
+                var title = item['media$group']['media$title'].$t;
+                if (title === "Deleted video") {
+                    return;
+                }
+
+                var videoId = item['media$group']['yt$videoid'].$t;
+                var vidchannel = item['media$group']['media$credit'][0].$t;
+                var url = item['link'][0].href;                
+
+                dataToAppend +=         
+                   '<a href="' + encodeURI(url) + '" onclick="loadVideoRow(' + vidIndex + ');return false;" ondblclick="openYouTube(' + vidIndex + ');return false;"><img border="0" title="' + escapeDouble(title)
+                + '" width="120" height="90" alt="' + escapeDouble(title) + '" src="' + encodeURI(thumb) + '"></a>\n';
+
+                loadedVids.push([videoId,vidchannel]);
+                vidIndex++;
+            });
+
+            if (dataToAppend.length !== 0)      
+            {   
+                $('.inner').append(dataToAppend);     
+
+                if (firstTime)
+                {
+                    $('.help').empty();
+                    firstTime = false;
+                }
+            }
         }
-        
-        var videoId = item['media$group']['yt$videoid'].$t;
-        var vidchannel = item['media$group']['media$credit'][0].$t;
-        var url = item['link'][0].href;                
-        
-        dataToAppend +=         
-           '<a href="' + encodeURI(url) + '" onclick="loadVideoRow(' + vidIndex + ');return false;" ondblclick="openYouTube(' + vidIndex + ');return false;"><img border="0" title="' + escapeDouble(title)
-+ '" width="120" height="90" alt="' + escapeDouble(title) + '" src="' + encodeURI(thumb) + '"></a>\n';
-        
-        loadedVids.push([videoId,vidchannel]);
-        vidIndex++;
-      });
-      
-      if (dataToAppend.length !== 0)      
-      {   
-        $('.inner').append(dataToAppend);     
-        
-        loadedok = true;
-        
-        if (firstTime)
-        {
-          $('.help').empty();
-          firstTime = false;
-        }
-      }
-    });
+    );
     
     return true;
 }
@@ -393,7 +392,7 @@ function loadVideoRow(vidIndex)
     var endIndex = vidIndex + 3;
     
     var i;
-    for(i=startIndex;i < loadedVids.length && i <= endIndex;i++)
+    for (i = startIndex;i < loadedVids.length && i <= endIndex;i++)
     {
         getMoreVids(loadedVids[i][1], MODE_NORMAL);
     }
@@ -401,48 +400,44 @@ function loadVideoRow(vidIndex)
 
 function toggleAbout()
 {
-  var divbg = document.getElementById('how');
-  if (divbg.style.visibility === "visible")
-  {
-    divbg.style.visibility = "hidden";
-  }
-  else
-  {
-    divbg.style.visibility =   "visible";
-  }
+    var divbg = document.getElementById('how');
+    if (divbg.style.visibility === "visible")
+    {
+        divbg.style.visibility = "hidden";
+    }
+    else
+    {
+        divbg.style.visibility =   "visible";
+    }
 }
-   
-
 
 $(document).ready(function()
 { 
-  $(document).keydown(function(e)
-  {
-    if (e.keyCode === 27)  
-    { 
-        // escape key
-        closeYouTube(); 
-        return false;
-    }  
-    if (e.keyCode === 37) 
-    { 
-       // left key
-       playNextVideo(false);
-       return false;
-    }
-    if (e.keyCode === 39) 
-    { 
-       // right key
-       playNextVideo(true);
-       return false;
-    }
-  });
-  
-  validateToken(true);
-  enableFavoriteButton();
-   // FIXME: Make Youtube player work properly with IFrame player as described here:
-   // https://developers.google.com/youtube/iframe_api_reference
+    $(document).keydown(function(e) {
+        if (e.keyCode === 27)  
+        { 
+            // escape key
+            closeYouTube(); 
+            return false;
+        }  
+        if (e.keyCode === 37) 
+        { 
+           // left key
+           playNextVideo(false);
+           return false;
+        }
+        if (e.keyCode === 39) 
+        { 
+           // right key
+           playNextVideo(true);
+           return false;
+        }
+    });
 
+    validateToken(true);
+    enableFavoriteButton();
+    // FIXME: Make Youtube player work properly with IFrame player as described here:
+    // https://developers.google.com/youtube/iframe_api_reference
 });
 
  </script>
@@ -495,7 +490,8 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 </td>
 </tr>
 </table>
-<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td valign="top"><div id="leftbox"><p>&nbsp;</p><p><a href="/"><img id="logoimg" src="find-interesting-logo.png" width="480" height="163" alt="Find Interesting Videos" border="0"></a></p>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr><td valign="top"><div id="leftbox"><p>&nbsp;</p><p><a href="/"><img id="logoimg" src="images/find-interesting-logo.png" width="480" height="163" alt="Find Interesting Videos" border="0"></a></p>
 
 
 </div>
@@ -507,7 +503,9 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <div id="outerbluebox">
   <!-- begin box content -->
   <div id="bluebox">
-<div id="inputdiv"><form action="/fi/" method="get">View Favorites from Youtube channel:&nbsp;&nbsp; <input id="channelbox" type="text" name="id"> <input id="channelsub" type="submit" border="0" value="Go">&nbsp; &nbsp; <span id="explore"></span></form></div>
+<div id="inputdiv"><form action="/fi/" method="get">View Favorites from Youtube channel:&nbsp;&nbsp; 
+<input id="channelbox" type="text" name="id"> <input id="channelsub" type="submit" border="0" value="Go">&nbsp; &nbsp; 
+<span id="explore"></span></form></div>
   
 Favorites of:&nbsp;&nbsp; <a href="/fi/?id=geoffmobile">geoffmobile</a>&nbsp; &nbsp; <a href="/fi/?id=geoffpeterstrio">geoffpeterstrio</a>
  </div>
@@ -515,28 +513,29 @@ Favorites of:&nbsp;&nbsp; <a href="/fi/?id=geoffmobile">geoffmobile</a>&nbsp; &n
 </div>
 
 <div id="searcharea">
-<form action="/fi/" method="get"><span class="searchtitle">Search:</span>&nbsp; <input id="searchbox" type="text" name="q"> <input id="searchsub" type="submit" border="0" value="Go">&nbsp; &nbsp; &nbsp; &nbsp; |&nbsp; &nbsp; 
-<a id="signInLink" title="Sign in using your Youtube account." class="hidestart" href="https://accounts.google.com/o/oauth2/auth?client_id=537332435748.apps.googleusercontent.com&amp;redirect_uri=http://geoffmobile.com/fi/oauth2callback.php&amp;scope=https://gdata.youtube.com&amp;response_type=token">Sign In</a>
+<form action="/fi/" method="get"><span class="searchtitle">Search:</span>&nbsp; <input id="searchbox" type="text" name="q"> 
+<input id="searchsub" type="submit" border="0" value="Go">&nbsp; &nbsp; &nbsp; &nbsp; |&nbsp; &nbsp; 
+<a id="signInLink" title="Sign in using your Youtube account." class="hidestart" href="https://accounts.google.com/o/oauth2/auth?client_id=537332435748.apps.googleusercontent.com&amp;redirect_uri=http://geoffmobile.com/fi/oauth2callback.php&amp;scope=https://www.googleapis.com/auth/youtube&amp;response_type=token">Sign In</a>
 <span id="signOutSpan" class="hidestart">Signed in. <a id="signOutLink" href="#" onclick="signOutOfGoogle(); return false;">Sign Out</a></span></form>
 </div>
 
 </div>
 </td></tr></table>
 
-<img src="divider.png" width="1116" height="8" alt="-">
+<img src="images/divider.png" width="1116" height="8" alt="-">
 <br>
 
 <div id="instructtop">
-<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><img src="double-click-to-watch-video.gif" width="246" height="21" alt="Double click to watch video."></td>
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><tr><td><img src="images/double-click-to-watch-video.gif" width="246" height="21" alt="Double click to watch video."></td>
 <td width="385">&nbsp;</td></tr></table>
 </div>
 
 <div class="inner"></div>
-<div id="morediv"><a href="#" onclick="loadMoreStarting(); return false;"><img src="load-more-videos.png" width="129" height="93" border="0" alt="Load More Videos"></a></div>
+<div id="morediv"><a href="#" onclick="loadMoreStarting(); return false;"><img src="images/load-more-videos.png" width="129" height="93" border="0" alt="Load More Videos"></a></div>
 <p>&nbsp;</p>
 <div class="help"><p>No videos showing? The user may not have any public favorites. Please try a different username.</p></div>   
 
-<img src="divider.png" width="1116" height="8" alt="-">
+<img src="images/divider.png" width="1116" height="8" alt="-">
 <br>
 <p><b><span class="larger">FAQ:</span></b></p>
 <table border="0" width="100%" cellpadding="0" cellspacing="0">
@@ -553,7 +552,7 @@ Favorites of:&nbsp;&nbsp; <a href="/fi/?id=geoffmobile">geoffmobile</a>&nbsp; &n
 </td>
 </tr>
 </table>
-<img src="divider.png" width="1116" height="8" alt="-">
+<img src="images/divider.png" width="1116" height="8" alt="-">
 <br>
 &nbsp;<br>
 <table border="0" width="100%" cellpadding="0" cellspacing="0">

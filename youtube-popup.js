@@ -84,7 +84,7 @@ function openYouTube(vidIndex){
       //Set Left and top coordinates for the div tag
       previousObj.style.left = butLeft + "px";
       previousObj.style.top = butTop + "px";
-      previousObj.innerHTML = "<a onclick=\"playNextVideo(false);return false;\" href=\"#\"><img border=\"0\" src=\"back-lg.gif\" title=\"Previous\" alt=\"Previous\" width=\"66\" height=\"96\"></a>";
+      previousObj.innerHTML = "<a onclick=\"playNextVideo(false);return false;\" href=\"#\"><img border=\"0\" src=\"images/back-lg.gif\" title=\"Previous\" alt=\"Previous\" width=\"66\" height=\"96\"></a>";
       document.body.appendChild(previousObj);     
       
       var nextObj = document.createElement('div');       
@@ -98,7 +98,7 @@ function openYouTube(vidIndex){
       //Set Left and top coordinates for the div tag
       nextObj.style.left = butLeft + "px";
       nextObj.style.top = butTop + "px";
-      nextObj.innerHTML = "<a onclick=\"playNextVideo(true);return false;\" href=\"#\"><img border=\"0\" src=\"forward-lg.gif\" title=\"Next\" alt=\"Next\" width=\"66\" height=\"96\"></a>";
+      nextObj.innerHTML = "<a onclick=\"playNextVideo(true);return false;\" href=\"#\"><img border=\"0\" src=\"images/forward-lg.gif\" title=\"Next\" alt=\"Next\" width=\"66\" height=\"96\"></a>";
       document.body.appendChild(nextObj); 
 }
 
