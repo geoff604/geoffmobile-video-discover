@@ -275,19 +275,42 @@ function getMoreVids(accountid, mode)
         $tokenExtra = '&access_token=' + readCookie(COOKIE_TOKEN);
     }
     
-    // FIXME: Fix the URL below to first make a call to
-    // GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&forUsername=Google&key={YOUR_API_KEY}
-    // and then get the favorites playlist from the user at: https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.channels.list?part=contentDetails&forUsername=Google&_h=1&
-    // or can use the channel id as in: GET https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=UCK8sQmJBp8GCxrOtXWBpyEA&key={YOUR_API_KEY}
     // see: https://developers.google.com/youtube/v3/guides/implementation/favorites
-    // and then get the list of videos as in: GET https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails%2Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&key={YOUR_API_KEY}
-    // see: https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.playlistItems.list?part=snippet%252CcontentDetails%252Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&_h=1&
-    var loadedOk = loadVids('http://gdata.youtube.com/feeds/api/users/' + accountid + '/favorites?v=2&alt=json-in-script&callback=?&max-results=30' + $tokenExtra, mode);
+
+    var channelInfoURL = "https://www.googleapis.com/youtube/v3/channels?part=contentDetails&id=" + encodeURIComponent(accountid);
+    channelInfoURL = appendKey(channelInfoURL);
+    $.getJSON(channelInfoURL, function(data) {  
+        if (data && data.items && data.items[0]) {
+            var item = data.items[0];
+            if (item.contentDetails && item.contentDetails.relatedPlaylists && item.contentDetails.relatedPlaylists.favorites) {
+                loadFavoritesFromPlaylist(item.contentDetails.relatedPlaylists.favorites, mode);
+            }
+        }
+    });
+    
+    // FIXME: Remove the call to loadVids and make the line below work with V3.
+    /*var loadedOk = loadVids('http://gdata.youtube.com/feeds/api/users/' + accountid + '/favorites?v=2&alt=json-in-script&callback=?&max-results=30' + $tokenExtra, mode);
   
     if (mode !== MODE_MORE && loadedOk)
     {
         loadedChans.push(accountid);   
-    }
+    }*/
+}
+
+function loadFavoritesFromPlaylist(playlistId, mode) {
+    var playlistVideosURL = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=" + encodeURIComponent(playlistId);
+    playlistVideosURL = appendKey(playlistVideosURL);
+    $.getJSON(playlistVideosURL, function(data) {  
+    // FIXME: Parse the response properly for V3
+    // Get the list of videos as in: GET https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails%2Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&key={YOUR_API_KEY}
+    // see: https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.playlistItems.list?part=snippet%252CcontentDetails%252Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&_h=1&
+        if (data && data.items && data.items[0]) {
+            var item = data.items[0];
+            if (item.contentDetails && item.contentDetails.relatedPlaylists && item.contentDetails.relatedPlaylists.favorites) {
+                loadFavoritesFromPlaylist(item.contentDetails.relatedPlaylists.favorites, mode);
+            }
+        }
+    });
 }
 
 function loadMoreStarting ()
@@ -298,6 +321,10 @@ function loadMoreStarting ()
     }   
 }
 
+function appendKey(url) {
+    return url + '&key=' + API_KEY;
+}
+
 function loadVids(requestURL, mode)
 {          
     if (mode === MODE_FIRST)
@@ -305,12 +332,12 @@ function loadVids(requestURL, mode)
         startingURL = requestURL;
     }
 
-    requestURL += '&key=' + API_KEY;
+    requestURL = appendKey(requestURL);
     if (mode === MODE_MORE || mode === MODE_FIRST)
     {
         var startString = "";
         
-        // TODO: Check if start-index is supported in V3.
+        // FIXME: start-index is not supported in V3, need to use pageToken instead.
         startString = "&start-index=" + startingIndex;
         startingIndex += 30;
         
