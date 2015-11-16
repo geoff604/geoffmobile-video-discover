@@ -256,7 +256,7 @@ var loadingInProgress = false;
 
 function getSearchVids(searchString, mode)
 {
-    loadVids('https://www.googleapis.com/youtube/v3/search?part=' + encodeURIComponent("snippet,contentDetails") + '&type=video&maxResults=30&q='+ encodeURIComponent(searchString), mode);
+    loadVids('https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults=30&q='+ encodeURIComponent(searchString), mode);
 }
 
 function getMoreVids(accountid, mode)
@@ -368,10 +368,15 @@ function loadVids(requestURL, mode)
                     return;
                 }
 
-                if (!item.contentDetails || !item.contentDetails.videoId) {
+                var videoId;
+                if (item.contentDetails && item.contentDetails.videoId) {
+                    videoId = item.contentDetails.videoId;
+                } else if (item.id && item.id.videoId) {
+                    videoId = item.id.videoId;
+                }
+                if (!videoId) {
                     return;
                 }
-                var videoId = item.contentDetails.videoId;
                 var vidchannel = item.snippet.channelId;
                 var url = "https://www.youtube.com/watch?v=" + videoId;                
 
