@@ -9,16 +9,17 @@
  <script type="text/javascript" src="youtube-popup.js"></script>
  <script type="text/javascript" src="jquery-1.11.3.min.js"></script>
 
-
  <script type="text/javascript">
  
 function createCookie(name,value,days) {
+    var expires;
     if (days) {
         var date = new Date();
         date.setTime(date.getTime()+(days*24*60*60*1000));
-        var expires = "; expires="+date.toGMTString();
+        expires = "; expires="+date.toGMTString();
+    } else {
+        expires = "";
     }
-    else var expires = "";
     document.cookie = name+"="+value+expires+"; path=/";
 }
 
@@ -27,8 +28,8 @@ function readCookie(name) {
     var ca = document.cookie.split(';');
     for(var i=0;i < ca.length;i++) {
         var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+        while (c.charAt(0) === ' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
     }
     return null;
 }
@@ -38,7 +39,7 @@ function eraseCookie(name) {
 }
  
 var COOKIE_TOKEN = "accessToken";
-var VALIDURL    =   'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
+var VALIDURL = 'https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=';
 
 var FAVORITES_URL = 'favorite.php';
 
@@ -123,8 +124,8 @@ function addToFavorites(videoId)
        }
        else
        {
-	       // popup login screen
-	       window.open ('https://accounts.google.com/o/oauth2/auth?client_id=537332435748.apps.googleusercontent.com&redirect_uri=http://geoffmobile.com/fi/oauth2callback.php&scope=https://www.googleapis.com/auth/youtube&response_type=token&state=' + videoId, 'newwindow', 'height=300,width=500, toolbar=no, menubar=no, scrollbars=no, resizable=yes,location=no, directories=no, status=no');
+           // popup login screen
+           window.open ('https://accounts.google.com/o/oauth2/auth?client_id=537332435748.apps.googleusercontent.com&redirect_uri=http://geoffmobile.com/fi/oauth2callback.php&scope=https://www.googleapis.com/auth/youtube&response_type=token&state=' + videoId, 'newwindow', 'height=300,width=500, toolbar=no, menubar=no, scrollbars=no, resizable=yes,location=no, directories=no, status=no');
        }
     };
     
@@ -155,7 +156,7 @@ function validateToken(firstTime, callback)
         data: null,
         success: function(data){  
 
-	        var isResponseOk = data.audience === CLIENT_ID;
+            var isResponseOk = data.audience === CLIENT_ID;
             setTokenValid(isResponseOk);
             if (firstTime)
             {
@@ -234,13 +235,13 @@ function toBottom()
     window.scrollTo(0,document.body.scrollHeight);
 }
    
-function escapeDouble ( mystring )
+function escapeDouble( mystring )
 {
     return mystring.replace(/"/g, "&quot;");
 }
 
-var loadedChans = new Array();
-var loadedVids = new Array();
+var loadedChans = [];
+var loadedVids = [];
 
 var MODE_FIRST = 0;
 var MODE_NORMAL = 1;
@@ -255,7 +256,7 @@ var loadingInProgress = false;
 
 function getSearchVids(searchString, mode)
 {
-    loadVids('https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q='+ encodeURIComponent(searchString), mode);
+    loadVids('https://www.googleapis.com/youtube/v3/search?part=' + encodeURIComponent("snippet,contentDetails") + '&type=video&maxResults=30&q='+ encodeURIComponent(searchString), mode);
 }
 
 function getMoreVids(accountid, mode)
@@ -288,32 +289,20 @@ function getMoreVids(accountid, mode)
         }
     });
     
-    // FIXME: Remove the call to loadVids and make the line below work with V3.
-    /*var loadedOk = loadVids('http://gdata.youtube.com/feeds/api/users/' + accountid + '/favorites?v=2&alt=json-in-script&callback=?&max-results=30' + $tokenExtra, mode);
-  
-    if (mode !== MODE_MORE && loadedOk)
+    if (mode !== MODE_MORE)
     {
         loadedChans.push(accountid);   
-    }*/
+    }
 }
 
 function loadFavoritesFromPlaylist(playlistId, mode) {
-    var playlistVideosURL = "https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=" + encodeURIComponent(playlistId);
-    playlistVideosURL = appendKey(playlistVideosURL);
-    $.getJSON(playlistVideosURL, function(data) {  
-    // FIXME: Parse the response properly for V3
     // Get the list of videos as in: GET https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails%2Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&key={YOUR_API_KEY}
     // see: https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.playlistItems.list?part=snippet%252CcontentDetails%252Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&_h=1&
-        if (data && data.items && data.items[0]) {
-            var item = data.items[0];
-            if (item.contentDetails && item.contentDetails.relatedPlaylists && item.contentDetails.relatedPlaylists.favorites) {
-                loadFavoritesFromPlaylist(item.contentDetails.relatedPlaylists.favorites, mode);
-            }
-        }
-    });
+    var playlistVideosURL = "https://www.googleapis.com/youtube/v3/playlistItems?part=" + encodeURIComponent("snippet,contentDetails") + "&maxResults=30&playlistId=" + encodeURIComponent(playlistId);
+    loadVids(playlistVideosURL, mode);
 }
 
-function loadMoreStarting ()
+function loadMoreStarting()
 {
     if (startingURL !== "")
     {
@@ -338,13 +327,12 @@ function loadVids(requestURL, mode)
         var startString = "";
         
         // FIXME: start-index is not supported in V3, need to use pageToken instead.
-        startString = "&start-index=" + startingIndex;
-        startingIndex += 30;
+        //startString = "&start-index=" + startingIndex;
+        //startingIndex += 30;
         
         requestURL += startString;
     }       
     
-    // FIXME: Make this parsing of the response work properly with youtube v3 API
     $.getJSON(requestURL,
         function(data) 
         {  
@@ -352,7 +340,7 @@ function loadVids(requestURL, mode)
 
             var dataToAppend = '';
 
-            var totalResults = data.feed.openSearch$totalResults.$t;
+            var totalResults = data.pageInfo.totalResults;
 
             if (mode == MODE_MORE || mode == MODE_FIRST)
             {
@@ -366,27 +354,30 @@ function loadVids(requestURL, mode)
                     moreobj.style.visibility = "hidden";
                 }
             }
-            if (!data.feed.entry) {
+            if (!data.items) {
                 return;
             }
-            $.each(data.feed.entry, function(i, item) {      
-                var thumbpart = item['media$group']['media$thumbnail'];
-                if (thumbpart == undefined)
-                  return;
+            data.items.forEach(function(item) {     
+                if (!item || !item.snippet || !item.snippet.thumbnails || !item.snippet.thumbnails.default) {
+                    return;
+                }
 
-                var thumb = thumbpart[0].url;
-                var title = item['media$group']['media$title'].$t;
+                var thumb = item.snippet.thumbnails.default.url;
+                var title = item.snippet.title;
                 if (title === "Deleted video") {
                     return;
                 }
 
-                var videoId = item['media$group']['yt$videoid'].$t;
-                var vidchannel = item['media$group']['media$credit'][0].$t;
-                var url = item['link'][0].href;                
+                if (!item.contentDetails || !item.contentDetails.videoId) {
+                    return;
+                }
+                var videoId = item.contentDetails.videoId;
+                var vidchannel = item.snippet.channelId;
+                var url = "https://www.youtube.com/watch?v=" + videoId;                
 
                 dataToAppend +=         
-                   '<a href="' + encodeURI(url) + '" onclick="loadVideoRow(' + vidIndex + ');return false;" ondblclick="openYouTube(' + vidIndex + ');return false;"><img border="0" title="' + escapeDouble(title)
-                + '" width="120" height="90" alt="' + escapeDouble(title) + '" src="' + encodeURI(thumb) + '"></a>\n';
+                   '<a href="' + encodeURI(url) + '" onclick="loadVideoRow(' + vidIndex + ');return false;" ondblclick="openYouTube(' + vidIndex + ');return false;"><img border="0" title="' + escapeDouble(title) +
+                   '" width="120" height="90" alt="' + escapeDouble(title) + '" src="' + encodeURI(thumb) + '"></a>\n';
 
                 loadedVids.push([videoId,vidchannel]);
                 vidIndex++;
