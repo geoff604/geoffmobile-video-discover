@@ -283,8 +283,15 @@ function getMoreVids(accountid, mode)
     $.getJSON(channelInfoURL, function(data) {  
         if (data && data.items && data.items[0]) {
             var item = data.items[0];
-            if (item.contentDetails && item.contentDetails.relatedPlaylists && item.contentDetails.relatedPlaylists.favorites) {
-                loadFavoritesFromPlaylist(item.contentDetails.relatedPlaylists.favorites, mode);
+            if (item.contentDetails && item.contentDetails.relatedPlaylists) {
+                if (item.contentDetails.relatedPlaylists.favorites) {
+                    loadFavoritesFromPlaylist(item.contentDetails.relatedPlaylists.favorites, mode);
+                } else if (item.contentDetails.relatedPlaylists.likes) {
+                    loadFavoritesFromPlaylist(item.contentDetails.relatedPlaylists.likes, mode);
+                }
+                if (item.contentDetails.relatedPlaylists.uploads) {
+                    loadFavoritesFromPlaylist(item.contentDetails.relatedPlaylists.uploads, mode);
+                }
             }
         }
     });
