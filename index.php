@@ -6,8 +6,8 @@
  <link type='text/css' rel='stylesheet' href='popup.css'>
 
  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
- <script type="text/javascript" src="youtube-popup.js"></script>
  <script type="text/javascript" src="jquery-1.11.3.min.js"></script>
+ <script type="text/javascript" src="youtube-popup.js"></script>
 
  <script type="text/javascript">
  
@@ -298,7 +298,7 @@ function getMoreVids(accountid, mode)
 function loadFavoritesFromPlaylist(playlistId, mode) {
     // Get the list of videos as in: GET https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails%2Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&key={YOUR_API_KEY}
     // see: https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.playlistItems.list?part=snippet%252CcontentDetails%252Cstatus&playlistId=FLK8sQmJBp8GCxrOtXWBpyEA&_h=1&
-    var playlistVideosURL = "https://www.googleapis.com/youtube/v3/playlistItems?part=" + encodeURIComponent("snippet,contentDetails") + "&maxResults=30&playlistId=" + encodeURIComponent(playlistId);
+    var playlistVideosURL = "https://www.googleapis.com/youtube/v3/playlistItems?part=" + encodeURIComponent("snippet,id") + "&maxResults=30&playlistId=" + encodeURIComponent(playlistId);
     loadVids(playlistVideosURL, mode);
 }
 
@@ -369,10 +369,13 @@ function loadVids(requestURL, mode)
                 }
 
                 var videoId;
+
                 if (item.contentDetails && item.contentDetails.videoId) {
                     videoId = item.contentDetails.videoId;
                 } else if (item.id && item.id.videoId) {
                     videoId = item.id.videoId;
+                } else if (item.snippet.resourceId && item.snippet.resourceId.videoId) {
+                    videoId = item.snippet.resourceId.videoId;
                 }
                 if (!videoId) {
                     return;
@@ -459,8 +462,6 @@ $(document).ready(function()
 
     validateToken(true);
     enableFavoriteButton();
-    // FIXME: Make Youtube player work properly with IFrame player as described here:
-    // https://developers.google.com/youtube/iframe_api_reference
 });
 
  </script>
@@ -476,9 +477,6 @@ $(document).ready(function()
   title="Click to add this video to your favorites." href="#">Add To Favorites</a>&nbsp; &nbsp;</span><span id="favoriteDoneSpan" class="hidestart">&nbsp; 
   |&nbsp; Added to Favorites.&nbsp; &nbsp;</span></span></span></div>
   <div id="ytwrapper" class="ytcontainer">
-    <div id="ytapiplayer">
-      You need Flash player 8+ and JavaScript enabled to view this video.
-    </div>
   </div>
 </div>
 
