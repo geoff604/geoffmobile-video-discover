@@ -119,7 +119,7 @@ function onPlayerReady()
 
 function onPlayerStateChange(newState) 
 {
-    if (newState === 0)
+    if (newState && newState.data === YT.PlayerState.ENDED)
     {
         playNextVideo (true);
     }
